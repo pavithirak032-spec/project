@@ -1,0 +1,62 @@
+import { useState } from "react";
+import jobs from "./data/jobs";
+import Filter from "./components/Filter";
+import JobCard from "./components/JobCard";
+import JobDetails from "./components/JobDetails";
+import "./App.css";
+
+function App() {
+  const [search, setSearch] = useState("");
+  const [location, setLocation] = useState("");
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [saved, setSaved] = useState([]);
+
+  const filteredJobs = jobs.filter(
+    (job) =>
+      job.role.toLowerCase().includes(search.toLowerCase()) &&
+      job.location.toLowerCase().includes(location.toLowerCase())
+  );
+
+  const saveJob = (job) => {
+    if (!saved.find((j) => j.id === job.id)) {
+      setSaved([...saved, job]);
+    }
+  };
+
+  return (
+    <div className="container">
+      <h1>Job Portal</h1>
+
+      <Filter
+        search={search}
+        setSearch={setSearch}
+        location={location}
+        setLocation={setLocation}
+      />
+
+      <div className="jobs">
+        {filteredJobs.map((job) => (
+          <JobCard
+            key={job.id}
+            job={job}
+            onView={setSelectedJob}
+            onSave={saveJob}
+          />
+        ))}
+      </div>
+
+      <JobDetails job={selectedJob} />
+
+      <h2>Bookmarked Jobs</h2>
+      <ul>
+        {saved.map((job) => (
+          <li key={job.id}>
+            {job.company} - {job.role}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default App;
